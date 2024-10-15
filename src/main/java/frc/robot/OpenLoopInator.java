@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.util.HashMap;
+import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.CANSparkMax;
@@ -25,6 +26,9 @@ public class OpenLoopInator {
     private DoubleSupplier voltage_provider, velocity_provider;
     private LinearRegression positive_model, negative_model;
     private HashMap<Double, Pair<Double, Double>> positive_data, negative_data;
+
+    private String name = "";
+    private int id = 0;
 
     private static final double DEFAULT_RESOLUTION = 0.1; // V
 
@@ -71,8 +75,8 @@ public class OpenLoopInator {
         this.negative_model = new LinearRegression(this.negative_data.values());
     }
 
-    public void set(double velocity) {
-        setReference(velocity);
+    public void set(double velocityRadPerSec) {
+        setReference(velocityRadPerSec);
     }
 
     public double getDryRun(double velocity) {
@@ -85,8 +89,8 @@ public class OpenLoopInator {
         return voltage;
     }
 
-    public void setReference(double velocity) {
-        this.ref_velocity = velocity;
+    public void setReference(double velocityRadPerSec) {
+        this.ref_velocity = velocityRadPerSec;
     }
 
     public double getReference() {
@@ -165,5 +169,33 @@ public class OpenLoopInator {
 
     public String dump() {
         return "Positive data:\n" + positive_model.dump() + "\nNegative data:\n" + negative_model.dump();
+    }
+
+    // convenience
+
+    public DoubleConsumer getDoubleConsumer(double arbitraryMaxSpeedRadPerSec) {
+        return x -> this.setReference(x * arbitraryMaxSpeedRadPerSec);
+    }
+
+    public DoubleConsumer getDoubleConsumer() {
+        return x -> this.setReference(x * freeSpeedRadPerSec);
+    }
+
+    public OpenLoopInator setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public OpenLoopInator setID(int id) {
+        this.id = id;
+        return this;
+    }
+
+    public int getID() {
+        return id;
     }
 }

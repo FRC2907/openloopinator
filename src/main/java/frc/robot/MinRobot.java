@@ -21,9 +21,10 @@ public class MinRobot extends TimedRobot {
   public void robotInit() {
     // need this (1/2)
     CANSparkMax m = new CANSparkMax(1, MotorType.kBrushless);
+    m.getEncoder().setVelocityConversionFactor(1d/5.95);
     Ao = new OpenLoopInator(m, DCMotor.getNEO(1));
 
-    if (Robot.isSimulation()) REVPhysicsSim.getInstance().addSparkMax(m, DCMotor.getNEO(1));
+    if (Robot.isSimulation()) REVPhysicsSim.getInstance().addSparkMax(m, DCMotor.getNEO(1));//.withReduction(5.95));
   }
 
   @Override
